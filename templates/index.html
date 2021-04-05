@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>index</title>
+	</head>
+	<body>
+		<a href="/login">login</a>
+		<a href="/signup">sign up</a>
+		<form action="/" method="get">
+			<label for="scity">source city:</label>
+			<input type="text" id="scity" name="scity" placeholder="source city name" required/>
+			<br>
+			<label for="dcity">destination city:</label>
+			<input type="text" id="dcity" name="dcity" placeholder="destination city name" required/>
+			<br>
+			<label for="dept_date">departure date:</label>
+			<input type="date" id="dept_date" name="dept_date">
+			<br>
+			<input type="submit" value="search" />
+		</form>
+		<!-- <p>{{flights}}</p> -->
+		{% if flights is not none %}
+			{% if flights|length == 0 %}
+				<p>no flight matches!</p>
+			{% else %}
+				{% for flight in flights %}
+					<p>{{flight}}</p>
+				{% endfor %}
+			{% endif %}
+		{% endif %}
+	</body>
+</html>

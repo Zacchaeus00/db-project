@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, session, url_for, redirect, f
 import mysql.connector
 import json
 app = Flask(__name__)
-db = mysql.connector.connect(host='localhost',user = 'root',password = '123456',database = 'db_project')
+dbconfig = json.load(open("dbconfig.json"))
+db = mysql.connector.connect(host=dbconfig['host'],user=dbconfig['user'],password=dbconfig['password'],database=dbconfig['database'])
 
 
 @app.route("/")

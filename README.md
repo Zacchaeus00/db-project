@@ -4,9 +4,9 @@
     git clone https://github.com/Zacchaeus14/db-project.git
     cd db-project
     pip install -r requirements.txt
-    EXPORT FLASK_APP=app.py
-    EXPORT FLASK_ENV=development
-on a windows PC, use `SET` instead of `EXPORT`
+    export FLASK_APP=app.py
+    export FLASK_ENV=development
+on a windows PC, use `set` instead of `export`
 
 Create a `dbconfig.json` under the project's root directory with content:
 

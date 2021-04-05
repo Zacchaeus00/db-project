@@ -3,7 +3,7 @@
 ## To Start
     git clone https://github.com/Zacchaeus14/db-project.git
     cd db-project
-    pip install requirements.txt
+    pip install -r requirements.txt
     EXPORT FLASK_APP=app.py
     EXPORT FLASK_ENV=development
 on a windows PC, use `SET` instead of `EXPORT`

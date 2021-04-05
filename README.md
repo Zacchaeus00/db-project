@@ -7,6 +7,7 @@
     EXPORT FLASK_APP=app.py
     EXPORT FLASK_ENV=development
 on a windows PC, use `SET` instead of `EXPORT`
+
 Create a `dbconfig.json` under the project's root directory with content:
 
     {"host": "localhost", "user": "root", "password": "your_password", "database": "your_db_name"}

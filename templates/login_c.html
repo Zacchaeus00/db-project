@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Customer Login</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <p2>Login as a Customer</p2>
+        <form action="/loginAuthC" method="POST">
+            <input type="text" name = "email" placeholder="email" required/> </br>
+            <input type="password" name = "password" placeholder="password" required/></br>
+            <input type="submit" value = Login />
+            {% if error %}
+                <p class="error"><strong>Error:</strong> {{error}}</p>
+            {% endif %}
+        </form>
+        <a href="/">Go back</a>
+    </body>
+</html>
+

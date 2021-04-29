@@ -3,8 +3,8 @@ import mysql.connector
 import json
 app = Flask(__name__)
 dbconfig = json.load(open("dbconfig.json"))
-db = mysql.connector.connect(host=dbconfig['host'], user=dbconfig['user'],
-                             password=dbconfig['password'], database=dbconfig['database'])
+conn = mysql.connector.connect(host=dbconfig['host'], user=dbconfig['user'],
+                               password=dbconfig['password'], database=dbconfig['database'])
 
 
 @app.route("/")
@@ -17,7 +17,7 @@ def public():
     date_check = request.args.get('date_check')
     flights = None
     statuses = None
-    cursor = db.cursor()
+    cursor = conn.cursor()
     if scity:
         query = """select * from flight, airport a1, airport a2
 				where departure_airport = a1.airport_name and a1.airport_city = '{}'
@@ -202,7 +202,7 @@ def registerAuthC():
         conn.commit()
         cursor.close()
         flash("You are logged in")
-        return render_template('index.html')
+        return redirect(url_for('public'))
 
 # Authenticates the register Booking Agent
 
@@ -237,7 +237,7 @@ def registerAuthB():
         conn.commit()
         cursor.close()
         flash("You are logged in")
-        return render_template('index.html')
+        return redirect(url_for('public'))
 
 # Authenticates the register Airline Staff
 
@@ -276,4 +276,12 @@ def registerAuthS():
         conn.commit()
         cursor.close()
         flash("You are logged in")
-        return render_template('index.html')
+        return redirect(url_for('public'))
+
+
+app.secret_key = 'some key that you will never guess'
+# Run the app on localhost port 5000
+# debug = True -> you don't have to restart flask
+# for changes to go through, TURN OFF FOR PRODUCTION
+if __name__ == "__main__":
+    app.run('127.0.0.1', 5000, debug=True)

@@ -11,11 +11,21 @@
 		<div id="1a">
 			<p> Search for upcoming flights:</p>
 			<form action="/" method="get">
-				<label for="scity">source city:</label>
-				<input type="text" id="scity" name="scity" required/>
+				<label for="src">source</label>
+				<select name="stype">
+					<option value="city">city</option>
+					<option value="airport">airport</option>
+				</select>
+				<label for="src">name:</label>
+				<input type="text" id="src" name="src" required/>
 				<br>
-				<label for="dcity">destination city:</label>
-				<input type="text" id="dcity" name="dcity" required/>
+				<label for="dst">destination</label>
+				<select name="dtype">
+					<option value="city">city</option>
+					<option value="airport">airport</option>
+				</select>
+				<label for="dst">name:</label>
+				<input type="text" id="dest" name="dst" required/>
 				<br>
 				<label for="date_search">date:</label>
 				<input type="date" id="date_search" name="date_search" required>
@@ -39,12 +49,10 @@
 				<label for="flight_num">flight number:</label>
 				<input type="text" id="flight_num" name="flight_num" required>
 				<br>
-				<label for="isdept">departure</label>
-				<input type="radio" id="isdept" name="dateof" value="departure" checked>
-				<br>
-				<label for="isarvl">arrival</label>
-				<input type="radio" id="isarvl" name="dateof" value="arrival">
-				<br>
+				<select name="datetype">
+					<option value="departure">departure</option>
+					<option value="arrival">arrival</option>
+				</select>
 				<label for="date_check">date:</label>
 				<input type="date" id="date_check" name="date_check" required>
 				<br>

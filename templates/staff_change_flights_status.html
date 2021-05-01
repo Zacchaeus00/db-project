@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff Change Flights Status</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <a href="/homeS">Back to menu</a>
+        <p>Change Flights Status:</p>
+        <form action="/staff_change_flights_status" method="get">
+            <label for="flight_num">flight_num</label>
+            <input type="text" name="flight_num" id="flight_num" required>
+            <br>
+            <label for="status">status</label>
+            <select id="status" name="status">
+                <option value="upcoming">upcoming</option>
+                <option value="delayed">delayed</option>
+                <option value="in-progress">in-progress</option>
+            </select>
+            <br>
+            <input type="submit" value="change status">
+        </form>
+        {% if res is not none %}
+            {% if res == "error" %}
+                <p>Invalid input!</p>
+            {% elif res == "notfound" %}
+                <p>Flight not found!</p>
+            {% else %}
+                <p>Status of flight {{res}} was successfully changed!</p>
+            {% endif %}
+        {% endif %}
+    </body>
+</html>

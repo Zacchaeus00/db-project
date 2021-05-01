@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff Home</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <form action="/staff_view_my_flights" method="get">
+            <input type="hidden" name="start_date" value="{{start_date}}">
+            <input type="hidden" name="end_date" value="{{end_date}}">
+            <input type="hidden" name="stype" value="{{stype}}">
+            <input type="hidden" name="src" value="{{src}}">
+            <input type="hidden" name="dtype" value="{{dtype}}">
+            <input type="hidden" name="dst" value="{{dst}}">
+            <input type="submit" value="back" />
+        </form>
+        <table>
+            <tr>
+                <th>email</th>
+                <th>name</th>
+                <th>building_number</th>
+                <th>street</th>
+                <th>city</th>
+                <th>state</th>
+                <th>phone_number</th>
+                <th>passport_number</th>
+                <th>passport_expiration</th>
+                <th>passport_country</th>
+                <th>date_of_birth</th>
+            </tr>
+            {% for customer in customers %}
+                <tr>
+                    {% for attribute in customer %}
+                    <td>{{attribute}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+
+
+</html>

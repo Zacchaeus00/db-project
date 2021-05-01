@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff Add Airport</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <a href="/homeS">Back to menu</a>
+        <p>Add Airport:</p>
+        <form action="/staff_add_airport" method="get">
+            <label for="airport_name">airport_name</label>
+            <input type="text" name="airport_name" id="airport_name" required>
+            <br>
+            <label for="airport_city">airport_city</label>
+            <input type="text" name="airport_city" id="airport_city" required>
+            <br>
+            <input type="submit" value="add">
+        </form>
+        {% if res is not none %}
+            {% if res == "error" %}
+                <p>Invalid input!</p>
+            {% elif res == "exist" %}
+                <p>This airport already exists!</p>
+            {% else %}
+                <p>Airport {{res}} was successfully added!</p>
+            {% endif %}
+        {% endif %}
+    </body>
+</html>

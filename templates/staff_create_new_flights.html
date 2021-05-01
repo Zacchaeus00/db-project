@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff Create Flights</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <a href="/homeS">Back to menu</a>
+        <p>Create new flights:</p>
+        <form action="/staff_create_new_flights" method="get">
+            <label for="flight_num">flight_num</label>
+            <input type="text" name="flight_num" id="flight_num" required>
+            <br>
+            <label for="departure_airport">departure_airport</label>
+            <input type="text" name="departure_airport" id="departure_airport" required>
+            <br>
+            <label for="departure_time">departure_time</label>
+            <input type="datetime-local" name="departure_time" id="departure_time" required>
+            <br>
+            <label for="arrival_airport">arrival_airport</label>
+            <input type="text" name="arrival_airport" id="arrival_airport" required>
+            <br>
+            <label for="arrival_time">arrival_time</label>
+            <input type="datetime-local" name="arrival_time" id="arrival_time" required>
+            <br>
+            <label for="price">price</label>
+            <input type="number" name="price" id="price" required>
+            <br>
+            <label for="status">status</label>
+            <select id="status" name="status">
+                <option value="upcoming">upcoming</option>
+                <option value="delayed">delayed</option>
+                <option value="in-progress">in-progress</option>
+            </select>
+            <br>
+            <label for="airplane_id">airplane_id</label>
+            <input type="number" name="airplane_id" id="airplane_id" required>
+            <br>
+            <input type="submit" value="create">
+        </form>
+        {% if res is not none %}
+            {% if res == "error" %}
+                <p>Invalid input!</p>
+            {% else %}
+                <p>Flight {{res}} was successfully added!</p>
+            {% endif %}
+        {% endif %}
+    </body>
+</html>

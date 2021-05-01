@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff View My Flights</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <a href="/homeS">Back to menu</a>
+        <p> Search for flights:</p>
+        <form action="/staff_view_my_flights" method="get">
+            <label for="start_date">start date:</label>
+            <input type="date" id="start_date" name="start_date" value="{{start_date}}" required>
+            <label for="end_date">end date:</label>
+            <input type="date" id="end_date" name="end_date" value="{{end_date}}" required>
+            <br>
+            <label for="src">source</label>
+            <select name="stype" value="{{stype}}">
+                <option value="city">city</option>
+                <option value="airport">airport</option>
+            </select>
+            <label for="src">name:</label>
+            <input type="text" id="src" name="src" value="{{src}}"  placeholder="optional"/>
+            <br>
+            <label for="dst">destination</label>
+            <select name="dtype" value="{{dtype}}">
+                <option value="city">city</option>
+                <option value="airport">airport</option>
+            </select>
+            <label for="dst">name:</label>
+            <input type="text" id="dst" name="dst" value="{{dst}}" placeholder="optional" />
+            <br>
+            <br>
+            <input type="submit" value="search" />
+        </form>
+        <!-- <p>{{flights}}</p> -->
+<!--         {% if flights|length == 0 %}
+            <p>no flight found!</p>
+        {% else %}
+            {% for flight in flights %}
+                <p>{{flight}}</p>
+            {% endfor %}
+        {% endif %} -->
+        <table>
+            <tr>
+                <th>airline_name</th>
+                <th>flight_num</th>
+                <th>departure_airport</th>
+                <th>departure_time</th>
+                <th>arrival_airport</th>
+                <th>arrival_time</th>
+                <th>price</th>
+                <th>status</th>
+                <th>airplane_id</th>
+                <th>customers</th>
+            </tr>
+            {% for flight in flights %}
+                <tr>
+                    {% for attribute in flight %}
+                    <td>{{attribute}}</td>
+                    {% endfor %}
+                    <td>
+                        <form action="/view_customers" method="get">
+                            <input type="hidden" name="start_date" value="{{start_date}}">
+                            <input type="hidden" name="end_date" value="{{end_date}}">
+                            <input type="hidden" name="stype" value="{{stype}}">
+                            <input type="hidden" name="src" value="{{src}}">
+                            <input type="hidden" name="dtype" value="{{dtype}}">
+                            <input type="hidden" name="dst" value="{{dst}}">
+                            <input type = "hidden" name = "flight_num" value = "{{flight[1]}}" />
+                            <input type="submit" value="view customers" />
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

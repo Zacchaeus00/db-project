@@ -6,29 +6,37 @@
 		<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	</head>
 	<body>
-		<a href="/login">login</a>
-		<a href="/register">sign up</a>
+		{% if usertype == "customer" %}
+			<a href="/homeC">my home page</a>
+		{% elif usertype == "booking_agent" %}
+			<a href="/homeB">my home page</a>
+		{% elif usertype == "staff" %}
+			<a href="/homeS">my home page</a>
+		{% else %}
+			<a href="/login">login</a>
+			<a href="/register">sign up</a>
+		{% endif %}
 		<div id="1a">
 			<p> Search for upcoming flights:</p>
 			<form action="/" method="get">
 				<label for="src">source</label>
-				<select name="stype">
+				<select name="stype" value="{{stype}}">
 					<option value="city">city</option>
 					<option value="airport">airport</option>
 				</select>
 				<label for="src">name:</label>
-				<input type="text" id="src" name="src" required/>
+				<input type="text" id="src" name="src" value="{{src}}" required/>
 				<br>
 				<label for="dst">destination</label>
-				<select name="dtype">
+				<select name="dtype" value="{{dtype}}">
 					<option value="city">city</option>
 					<option value="airport">airport</option>
 				</select>
 				<label for="dst">name:</label>
-				<input type="text" id="dst" name="dst" required/>
+				<input type="text" id="dst" name="dst" value="{{dst}}" required/>
 				<br>
 				<label for="date_search">date:</label>
-				<input type="date" id="date_search" name="date_search" required>
+				<input type="date" id="date_search" name="date_search" value="{{date_search}}" required>
 				<br>
 				<input type="submit" value="search" />
 			</form>
@@ -47,14 +55,14 @@
 			<p>Check flight status:</p>
 			<form action="/" method="get">
 				<label for="flight_num">flight number:</label>
-				<input type="text" id="flight_num" name="flight_num" required>
+				<input type="text" id="flight_num" name="flight_num" value="{{flight_num}}" required>
 				<br>
-				<select name="datetype">
+				<select name="datetype" value="{{datetype}}">
 					<option value="departure">departure</option>
 					<option value="arrival">arrival</option>
 				</select>
 				<label for="date_check">date:</label>
-				<input type="date" id="date_check" name="date_check" required>
+				<input type="date" id="date_check" name="date_check" value="{{date_check}}" required>
 				<br>
 				<input type="submit" value="check status" />
 			</form>

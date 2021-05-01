@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff Add Airplane</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <a href="/homeS">Back to menu</a>
+        <p>Add Airplane:</p>
+        <form action="/staff_add_airplane" method="get">
+            <label for="airplane_id">airplane_id</label>
+            <input type="number" name="airplane_id" id="airplane_id" required>
+            <br>
+            <label for="seats">seats</label>
+            <input type="number" name="seats" id="seats" required>
+            <br>
+            <input type="submit" value="add">
+        </form>
+        {% if res is not none %}
+            {% if res == "error" %}
+                <p>Invalid input!</p>
+            {% elif res == "exist" %}
+                <p>This airplane already exists!</p>
+            {% else %}
+                <p>Airplane {{res}} was successfully added!</p>
+            {% endif %}
+        {% endif %}
+    </body>
+</html>

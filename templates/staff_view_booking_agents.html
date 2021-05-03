@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff View Top Booking Agents</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <div>
+            <a href="/homeS">Back to menu</a>
+        </div>
+        <div>
+        <table>
+            <caption>Top 5 booking agents based on number of tickets sales for the past month (since {{date1}})</caption>
+            <tr>
+                <th>email</th>
+                <th>booking_agent_id</th>
+                <th>number_of_sales</th>
+            </tr>
+            {% for agent in data1 %}
+                <tr>
+                    {% for attribute in agent %}
+                    <td>{{attribute}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        </div>
+        <br>
+        <div>
+            <table>
+            <caption>Top 5 booking agents based on number of tickets sales for the past year (since {{date2}})</caption>
+            <tr>
+                <th>email</th>
+                <th>booking_agent_id</th>
+                <th>number_of_sales</th>
+            </tr>
+            {% for agent in data2 %}
+                <tr>
+                    {% for attribute in agent %}
+                    <td>{{attribute}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        </div>
+        <br>
+        <div>
+            <table>
+            <caption>Top 5 booking agents based on the amount of commission received for the last year (since {{date3}})</caption>
+            <tr>
+                <th>email</th>
+                <th>booking_agent_id</th>
+                <th>commission_reveived</th>
+            </tr>
+            {% for agent in data3 %}
+                <tr>
+                    {% for attribute in agent %}
+                    <td>{{attribute}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        </div>
+
+
+    </body>
+
+
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff View Reports</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <div>
+            <a href="/homeS">Back to menu</a>
+        </div>
+        <div>
+            <p>Total amounts of ticket sold last year: {{amt_tck_ly}}</p>
+            <p>Total amounts of ticket sold last month: {{amt_tck_lm}}</p>
+        </div>
+        <div>
+            <p>Check statistics of ticket sold based on range of dates:</p>
+            <form action="/staff_view_reports" method="get">
+                <label for="start_date">start date:</label>
+                {% if start_date is not none %}
+                    <input type="date" id="start_date" name="start_date" value="{{start_date}}" required>
+                {% else %}
+                    <input type="date" id="start_date" name="start_date" required>
+                {% endif %}
+                <label for="end_date">end date:</label>
+                {% if end_date is not none %}
+                    <input type="date" id="end_date" name="end_date" value="{{end_date}}" required>
+                {% else %}
+                    <input type="date" id="end_date" name="end_date" required>
+                {% endif %}
+                <input type="submit" value="check" />
+            </form>
+            {% if start_date is not none %}
+                <p>Total amounts of ticket sold between {{start_date}} and {{end_date}}: {{amt_tck_range}}</p>
+            {% endif %}
+        </div>
+        <div>
+            <p>Bar chart of monthly sales</p>
+            <form action="/staff_view_reports" method="get">
+                <label for="year">Please enter a year:</label>
+                {% if year is not none %}
+                    <input type="number" min="1900" max="{{current_year}}" step="1" value="{{year}}" name="year" id="year" required/>
+                {% else %}
+                    <input type="number" min="1900" max="{{current_year}}" step="1" name="year" id="year" required/>
+                {% endif %}
+                <input type="submit" value="check" />
+            </form>
+            {% if year is not none %}
+                <img src="{{img_url}}" alt="Chart" height="auto" width="30%">
+            {% endif %}
+        </div>
+
+    </body>
+</html>

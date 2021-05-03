@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff View Top Destinations</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <div>
+            <a href="/homeS">Back to menu</a>
+        </div>
+        <div>
+            <p>
+                Top 3 most popular destinations for last 3 months:
+                {% for dst in dsts_l3m %}
+                    <span>{{dst}}</span>
+                {% endfor %}
+            </p>
+            <p>
+                Top 3 most popular destinations for last year:
+                {% for dst in dsts_ly %}
+                    <span>{{dst}}</span>
+                {% endfor %}
+            </p>
+        </div>
+
+
+
+
+    </body>
+</html>

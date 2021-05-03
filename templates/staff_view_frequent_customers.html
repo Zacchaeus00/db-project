@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Staff View Frequent Customers</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+    <body>
+        <div>
+            <a href="/homeS">Back to menu</a>
+        </div>
+        <div>
+        <table>
+            <caption>The most frequent customer within the last year (since {{last_year}})</caption>
+            <tr>
+                <th>email</th>
+                <th>name</th>
+                <th>building_number</th>
+                <th>street</th>
+                <th>city</th>
+                <th>state</th>
+                <th>phone_number</th>
+                <th>passport_number</th>
+                <th>passport_expiration</th>
+                <th>passport_country</th>
+                <th>date_of_birth</th>
+                <th>number_of_purchases</th>
+            </tr>
+            <tr>
+                {% for attribute in top_customer %}
+                <td>{{attribute}}</td>
+                {% endfor %}
+            </tr>
+        </table>
+        </div>
+        <br>
+        <div>
+            <p>Search for all flights a particular customer has taken on {{my_airline}}</p>
+            <form action="/staff_view_frequent_customers" method="get">
+                <label for="email">Please enter an email of a customer:</label>
+                {% if email is not none %}
+                    <input type="email" name="email" id="email" value="{{email}}" required>
+                {% else %}
+                    <input type="email" name="email" id="email" required>
+                {% endif %}
+                <input type="submit" value="search">
+            </form>
+            {% if email is not none%}
+                {% if flights|length == 0 %}
+                    <p>no flights found for {{email}}!</p>
+                {% else %}
+                    <table>
+                        <caption>flights {{email}} has taken on {{my_airline}}</caption>
+                        <tr>
+                            <th>airline_name</th>
+                            <th>flight_num</th>
+                            <th>departure_airport</th>
+                            <th>departure_time</th>
+                            <th>arrival_airport</th>
+                            <th>arrival_time</th>
+                            <th>price</th>
+                            <th>status</th>
+                            <th>airplane_id</th>
+                        </tr>
+                        {% for flight in flights %}
+                            <tr>
+                                {% for attribute in flight %}
+                                <td>{{attribute}}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            {% endif %}
+        </div>
+
+
+    </body>
+
+
+</html>

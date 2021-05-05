@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    </head>
+	<body>
+		<div id="1a">
+			<p> Search for upcoming flights:</p>
+			<form action="/" method="get">
+				<label for="scity">source city:</label>
+				<input type="text" id="scity" name="scity" required/>
+				<br>
+				<label for="dcity">destination city:</label>
+				<input type="text" id="dcity" name="dcity" required/>
+				<br>
+				<label for="date_search">date:</label>
+				<input type="date" id="date_search" name="date_search" required>
+				<br>
+				<input type="submit" value="search" />
+			</form>
+			<!-- <p>{{flights}}</p> -->
+			{% if flights is not none %}
+				{% if flights|length == 0 %}
+					<p>no flight found!</p>
+				{% else %}
+					{% for flight in flights %}
+						<p>{{flight}}</p>
+					{% endfor %}
+				{% endif %}
+			{% endif %}
+		</div>
+		<div id="1b">
+			<p>Check flight status:</p>
+			<form action="/" method="get">
+				<label for="flight_num">flight number:</label>
+				<input type="text" id="flight_num" name="flight_num" required>
+				<br>
+				<label for="isdept">departure</label>
+				<input type="radio" id="isdept" name="dateof" value="departure" checked>
+				<br>
+				<label for="isarvl">arrival</label>
+				<input type="radio" id="isarvl" name="dateof" value="arrival">
+				<br>
+				<label for="date_check">date:</label>
+				<input type="date" id="date_check" name="date_check" required>
+				<br>
+				<input type="submit" value="check status" />
+			</form>
+			<!-- <p>{{statuses}}</p> -->
+			{% if statuses is not none %}
+				{% if statuses|length == 0 %}
+					<p>no status found!</p>
+				{% else %}
+					{% for status in statuses %}
+						<p>{{status}}</p>
+					{% endfor %}
+				{% endif %}
+			{% endif %}
+		</div>
+
+
+	</body>
+</html>

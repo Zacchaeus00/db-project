@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        {% if username%}
+            <h2>{{username}}</h2>
+        {% endif %}
+    </head>
+    <body>
+        
+        <div>
+            <p>View My Flights</p>
+            <form action = '/view_my_flights', method = "POST">
+                <input type="radio" name = "choice" value = default required>Showing upcoming flights<br>
+			    <input type="radio" name = "choice" value = specify required>Specify some information:<br> <br>
+
+                Please specify your request:<br>
+                <input type="checkbox" name = "info" value = name>departure/arrival city/airport<br>
+                <input type="text" name = "d_name" placeholder = "departure city/airport"> <br>
+                <input type="text" name = "a_name" placeholder = "arrival city/airport"> <br>
+                <input type="checkbox" name = "info" value = date>range of date <br> 
+                <input type="date" name="start" placeholder="start date"><br>
+                <input type="date" name="end" placeholder="end date"><br>
+                <input type="submit" value = Search>
+            </form>
+            <br><br>
+            {% if flights_rec is not none %}
+                {% if flights_rec|length != 0 %}
+                    <table>
+                        <th>airline name</th>
+                        <th>flight number</th>
+                        <th>departure airport</th>
+                        <th>departure time</th>
+                        <th>arrival airport</th>
+                        <th>arrival time</th>
+                        <th>price</th>
+                        <th>status</th>
+                        <th>airplane ID</th>
+                    {% for line in flight_rec %}
+                        <tr>
+                            <td>{{line[0]}}</td>
+                            <td>{{line[1]}}</td>
+                            <td>{{line[2]}}</td>
+                            <td>{{line[3]}}</td>
+                            <td>{{line[4]}}</td>
+                            <td>{{line[5]}}</td>
+                            <td>{{line[6]}}</td>
+                            <td>{{line[7]}}</td>
+                            <td>{{line[8]}}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                {% else %}
+                    <b>You have no scheduled flights.</b><br><br>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div>
+            <a href="/purchase">Search/Purchase Flights</a>
+            {% if flights_found is not none %}
+				{% if flights_found|length == 0 %}
+					<p>no flight found!</p>
+				{% else %}
+					{% for flight in flights_found %}
+						<p>{{flight}}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        </div>
+        <div>
+            <a href="/track_my_spending_c">Track My Spending</a>
+        </div>
+    </body>
+    <a href="/logout">Logout</a>
+</html>

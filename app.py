@@ -9,12 +9,19 @@ import time
 import os
 import glob
 import numpy as np
+import random
+import hashlib
 mpl.use('Agg')
 mpl.is_interactive()
 app = Flask(__name__)
 dbconfig = json.load(open("dbconfig.json"))
 conn = mysql.connector.connect(host=dbconfig['host'], user=dbconfig['user'],
                                password=dbconfig['password'], database=dbconfig['database'])
+
+def get_md5(s):
+    md = hashlib.md5()
+    md.update(s.encode('utf-8'))
+    return md.hexdigest()
 
 
 @app.route("/")
@@ -127,6 +134,8 @@ def loginAuthC():
     username = request.form['email']
     password = request.form['password']
 
+    password = get_md5(password+"SSC")
+
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
@@ -140,9 +149,10 @@ def loginAuthC():
     if(data):
         # creates a session for the the user
         # session is a built in
-        session['username'] = username
+        name = data[1]
+        session['username'] = name
         session['usertype'] = "customer"
-        return redirect(url_for('public'))
+        return redirect(url_for('customer_page'))
     else:
         # returns an error message to the html page
         error = 'Invalid login or username'
@@ -156,7 +166,7 @@ def loginAuthB():
     # grabs information from the forms
     username = request.form['email']
     password = request.form['password']
-
+    password = get_md5(password+"SSC")
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
@@ -172,7 +182,7 @@ def loginAuthB():
         # session is a built in
         session['username'] = username
         session['usertype'] = "booking_agent"
-        return redirect(url_for('public'))
+        return redirect(url_for('booking_agent_page'))
     else:
         # returns an error message to the html page
         error = 'Invalid login or username'
@@ -186,7 +196,7 @@ def loginAuthS():
     # grabs information from the forms
     username = request.form['username']
     password = request.form['password']
-
+    password = get_md5(password+"SSC")
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
@@ -238,6 +248,8 @@ def registerAuthC():
 #                flash("Password length must be at least 4 characters")
  #               return redirect(request.url)
 
+    password = get_md5(password+"SSC")
+
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
@@ -273,7 +285,7 @@ def registerAuthB():
 #   if not len(password) >= 4:
 #                flash("Password length must be at least 4 characters")
  #               return redirect(request.url)
-
+    password = get_md5(password+"SSC")
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
@@ -311,7 +323,7 @@ def registerAuthS():
 #   if not len(password) >= 4:
 #                flash("Password length must be at least 4 characters")
  #               return redirect(request.url)
-
+    password = get_md5(password+"SSC")
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
@@ -937,6 +949,413 @@ def show_sessions():
     for k, v in session.items():
         d[k] = v
     return json.dumps(d)
+
+
+@app.route('/customer_page')
+def customer_page():
+    if "username" in session:
+        username = session["username"]
+        return render_template("/customer_page.html", username = "Welcome! "+username, flights_rec = None, flights_found = None)
+
+@app.route('/booking_agent_page')
+def booking_agent_page():
+    if "username" in session:
+        username = session["username"]
+        return render_template("/booking_agent_page.html", username = "Welcome! "+username, flights_rec = None, flights_found = None)
+
+@app.route('/view_my_flights', methods = ["GET", "POST"])
+def view_my_flights():
+    usertype = session["usertype"]
+    cursor = conn.cursor()
+    choice = request.form["choice"]
+    if choice == "default":
+        out = None
+        # cursor used to send queries
+
+        # executes query
+        if usertype == "customer":
+            query = "SELECT * FROM flight where status = 'upcoming' and flight_num in (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN customer WHERE name = \'{}\')"
+        elif usertype == "booking agent":
+            query = "SELECT * FROM flight where status = 'upcoming' and flight_num in (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN booking_agent WHERE email = \'{}\')"
+        elif usertype == "staff":
+            query = "SELECT * FROM flight where status = 'upcoming' and airline_name = (SELECT airline_name FROM airline_staff WHERE username =  \'{}\') and DateDiff(departure_time, CURDATE()) <= 30"
+        cursor.execute(query.format(session["username"]))
+        # stores the results in a variable
+        out = cursor.fetchall()
+        # use fetchall() if you are expecting more than 1 data row
+    elif choice == "specify":
+        info = request.form.getlist("info")
+        cities = "SELECT airport_city FROM airport"
+        cursor.execute(cities)
+        res = cursor.fetchall()
+        city = []
+        for i in res:
+            city.append(i[0])
+        airports = "SELECT airport_name FROM airport"
+        cursor.execute(airports)
+        out = cursor.fetchall()
+        airport = []
+        for i in out:
+            airport.append(i[0])
+
+        place = None
+        time = None
+
+        out = []
+        data1 = []
+        data2 = []
+
+        for i in info:
+            if i == "date":
+                time = i
+            elif i == "name":
+                place = i
+
+        if time is not None:
+            start = request.form["start"]
+            end = request.form["end"]
+            if usertype == "customer":
+                query1 = "SELECT * FROM flight WHERE (departure_time between \'{}\' and \'{}\') and flight_num in (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN customer WHERE name = \'{}\')"
+            elif usertype == "booking agent":
+                query1 = "SELECT * FROM flight WHERE (departure_time between \'{}\' and \'{}\') and flight_num in (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN booking_agent WHERE email = \'{}\')"
+            elif usertype == "staff":
+                query1 = "SELECT * FROM flight WHERE (departure_time between \'{}\' and \'{}\') and airline_name = (SELECT airline_name FROM airline_staff WHERE username = \'{}\')"
+            cursor.execute(query1.format(start,end,session["username"]))
+            data1 = cursor.fetchall()
+
+        if place is not None:
+            dept = request.form["d_name"]
+            arr = request.form["a_name"]
+            if dept in city and arr in city:
+                if usertype == "customer":
+                    query2 = "SELECT * FROM flight WHERE departure_airport in (SELECT airport_name FROM airport \
+                        WHERE airport_city = \'{}\') and arrival_airport in (select airport_name from airport where airport_city = \'{}\') and flight_num in \
+                        (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN customer WHERE name = \'{}\')"
+                elif usertype == "booking agent":
+                    query2 = "SELECT * FROM flight WHERE departure_airport in (SELECT airport_name FROM airport \
+                        WHERE airport_city = \'{}\') and arrival_airport in (select airport_name from airport where airport_city = \'{}\') and flight_num in \
+                        (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN booking_agent WHERE email = \'{}\')"
+                elif usertype == "staff":
+                    query2 = "SELECT * FROM flight WHERE departure_airport in (SELECT airport_name FROM airport \
+                        WHERE airport_city = \'{}\') and arrival_airport in (select airport_name from airport where airport_city = \'{}\') and airline_name = \
+                        (SELECT airline_name FROM airline_staff WHERE username = \'{}\')"
+                cursor.execute(query2.format(dept,arr,session["username"]))
+                data2 = cursor.fetchall()
+            elif dept in airport and arr in airport:
+                if usertype == "customer":
+                    query2 = "SELECT * FROM flight WHERE departure_airport = \'{}\' and arrival_airport = \'{}\' and flight_num in\
+                            (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN customer WHERE name = \'{}\')"
+                elif usertype == "booking agent":
+                    query2 = "SELECT * FROM flight WHERE departure_airport = \'{}\' and arrival_airport = \'{}\' and flight_num in\
+                        (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN booking_agent WHERE email = \'{}\')"
+                elif usertype == "staff":
+                    query2 = "SELECT * FROM flight WHERE departure_airport = \'{}\' and arrival_airport = \'{}\' and airline_name =\
+                        (SELECT airline_name FROM airline_staff WHERE username = \'{}\')"
+                cursor.execute(query2.format(dept,arr,session["username"]))
+                data2 = cursor.fetchall()
+        if data1 == [] and data2 == []:
+            out = []
+        elif data1 != [] and data2 == []:
+            out = data1
+        elif data2 != [] and data1 == []:
+            out = data2
+        else:
+            for i in data1:
+                for i in data2:
+                    out.append(i)
+    cursor.close()
+    if usertype == "customer":
+        return render_template("customer_page.html", username = session["username"],flights_rec = out)
+    elif usertype == "booking agent":
+        return render_template("booking_agent_page.html", username = session["username"],flights_rec = out)
+
+@app.route('/track_my_spending_c')
+def track_my_spending_c():
+    return render_template('track_my_spending_c.html')
+
+
+@app.route('/spending_c', methods = ["GET", "POST"])
+def spending_c():
+    choice = request.form["choice"]
+    cursor = conn.cursor()
+
+    if choice == "default":
+        year = "SELECT SUM(price) FROM purchases NATURAL JOIN ticket NATURAL JOIN flight NATURAL JOIN customer WHERE name = \'{}\'\
+            and DateDiff(CURDATE(), purchase_date) <= 365"
+        cursor.execute(year.format(session["username"]))
+        spend = cursor.fetchone()[0]
+        month = "SELECT SUM(price),convert(varchar(7),purchase_date) FROM purchases NATURAL JOIN ticket NATURAL JOIN\
+            flight NATURAL JOIN customer WHERE name = \'{}\' and DateDiff(CURDATE(), purchase_date) <= 365/2 GROUP BY convert(varchar(7),purchase_date)"
+        cursor.execute(month.format(session["username"]))
+        spent = cursor.fetchall()
+
+        return render_template('track_my_spending_c.html', spending = spend, spent = spent)
+    elif choice == "specify":
+        start = request.form["start"]
+        end = request.form["end"]
+        year = "SELECT SUM(price) FROM purchases NATURAL JOIN ticket NATURAL JOIN flight NATURAL JOIN customer WHERE name = \'{}\'\
+            and purchase_date between \'{}\' and \'{}\'"
+        cursor.execute(year.format(session["username"], start, end))
+        spend = cursor.fetchone()[0]
+
+        month = "SELECT SUM(price),convert(varchar(7),purchase_date) FROM purchases NATURAL JOIN ticket NATURAL JOIN\
+            flight NATURAL JOIN customer WHERE name = \'{}\' and purchase_date between \'{}\' and \'{}\' GROUP BY convert(varchar(7),purchase_date)"
+        cursor.execute(month.format(session["username"], start, end))
+        spent = cursor.fetchall()
+
+        return render_template('track_my_spending_c.html', spending = spend, spent = spent)
+
+@app.route("/purchase")
+def purchase():
+    usertype = session["usertype"]
+    username = session["username"]
+    return render_template('purchase.html', username = username, usertype = usertype)
+
+@app.route('/search_flights', methods = ["GET", "POST"])
+def search_flights():
+    usertype = session["usertype"]
+    scity = request.args.get('scity')
+    dcity = request.args.get('dcity')
+    sair = request.args.get("sair")
+    dair = request.args.get("dair")
+    date_search = request.args.get('date_search')
+    flight_num = request.args.get('flight_num')
+    dateof = request.args.get('dateof')
+    date_check = request.args.get('date_check')
+    flights = None
+    statuses = None
+    cursor = conn.cursor()
+
+    # grab all cities in the database
+    querycity = "SELECT airport_city from airport"
+    cursor.execute(querycity)
+    citiesdata = cursor.fetchall()
+    cities = []
+    for i in citiesdata:
+        cities.append(i[0])
+    # grab all airports in the database
+    queryairport = "SELECT airport_name from airport"
+    cursor.execute(queryairport)
+    airportsdata = cursor.fetchall()
+    airports = []
+    for i in airportsdata:
+        airports.append(i[0])
+
+    error1 = None
+    if scity:
+        if (scity not in cities) or (dcity not in cities):
+            error1 = "Errors in City names, please check again and enter a correct one"
+            if usertype =="booking agent" or usertype == "customer":
+                return render_template('purchase.html', error = error1)
+        else:
+            query = """select * from flight, airport a1, airport a2
+                    where departure_airport = a1.airport_name and a1.airport_city = '{}'
+                    and arrival_airport = a2.airport_name and a2.airport_city = '{}'
+                    and departure_time LIKE '{}%' and status = 'upcoming'"""
+            cursor.execute(query.format(scity, dcity, date_search))
+            flights = cursor.fetchall()
+    elif sair:
+        if (sair not in airports) or (dair not in airports):
+            error1 = "Errors in Airport names, please check again and enter a correct one"
+            if usertype =="booking agent" or usertype == "customer":
+                return render_template('purchase.html', error = error1)
+        else:
+            query = """select * from flight, airport a1, airport a2
+                    where departure_airport = a1.airport_name and a1.airport_name = '{}'
+                    and arrival_airport = a2.airport_name and a2.airport_name = '{}'
+                    and departure_time LIKE '{}%' and status = 'upcoming'"""
+            cursor.execute(query.format(sair, dair, date_search))
+            flights = cursor.fetchall()
+    elif flight_num:
+        query = """select status from flight
+                where flight_num = '{}' and {}_time LIKE '{}%'"""
+        cursor.execute(query.format(flight_num, dateof, date_check))
+        statuses = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    if usertype == "booking agent" or usertype == "customer":
+        return render_template("purchase.html", flights = flights, statuses = statuses)
+
+
+
+
+@app.route("/purchase_confirm")
+def purchase_confirm():
+    usertype = session["usertype"]
+    username = session["username"]
+    return render_template('purchase_confirm.html', username = username, usertype = usertype)
+
+@app.route('/purchasing', methods = ["GET", "POST"])
+def purchasing():
+    airline_name = request.form["airline_name"]
+    flight_num = request.form["flight_num"]
+    usertype = session["usertype"]
+    message1 = None
+    session["airline_name"] = airline_name
+    session["flight_num"] = flight_num
+    cursor = conn.cursor()
+
+    # check whether the seats of the plane is enough.
+    seatcount = "SELECT seats FROM airplane NATURAL JOIN flight WHERE flight.airline_name = \'{}\' and flight.flight_num = \'{}\'"
+    cursor.execute(seatcount.format(airline_name, flight_num))
+    seat = cursor.fetchone()
+    print(seat[0])
+
+    ticketcount = "SELECT count(*) FROM ticket WHERE airline_name = \'{}\' and flight_num = \'{}\'"
+    cursor.execute(ticketcount.format(airline_name, flight_num))
+    count = cursor.fetchone()
+    cursor.close()
+    if count[0] >= seat[0]:
+        message1 = "The ticket of this flight is sold out. Please choose from other flights."
+        session.pop('airline_name')
+        session.pop('flight_num')
+        return render_template("purchase.html", usertype = usertype, message1 = message1)
+
+    else:
+        message1 = "Confirm your purchase information."
+        return render_template("purchase_confirm.html", usertype = usertype)
+
+@app.route('/confirm', methods = ["GET", "POST"])
+def confirm():
+    username = session["username"]
+    usertype = session["usertype"]
+    airline_name = session["airline_name"]
+    flight_num = session["flight_num"]
+    ticket_id = random.randint(10000, 99999)
+    message = "Successfully Purchased!"
+
+
+    cursor = conn.cursor()
+    iticket = "Insert into ticket values(\'{}\', \'{}\', \'{}\')"
+    cursor.execute(iticket.format(ticket_id, airline_name, flight_num))
+    conn.commit()
+
+    if usertype == "customer":
+        # executes query
+        query = "SELECT * FROM customer WHERE name = \'{}\'"
+        cursor.execute(query.format(username))
+        # stores the results in a variable
+        data = cursor.fetchone()
+        username = data[0]
+        ipurchase = "Insert into purchases (ticket_id, customer_email,purchase_date) values(\'{}\', \'{}\',\'{}\')"
+        cursor.execute(ipurchase.format(ticket_id, username,datetime.datetime.today().strftime('%Y-%m-%d')))
+        conn.commit()
+
+    else:
+        # Find booking agent id
+        query = "select booking_agent_id from booking_agent where email = \'{}\'"
+        cursor.execute(query.format(username))
+        booking_agent_id = cursor.fetchone()
+        # insert to purchases
+        customer_email = request.form["customer_email"]
+        ipurchase = "Insert into purchases (ticket_id, customer_email, booking_agent_id,purchase_date) values(\'{}\', \'{}\', \'{}\',\'{}\')"
+        cursor.execute(ipurchase.format(ticket_id, customer_email, booking_agent_id[0],datetime.datetime.today().strftime('%Y-%m-%d')))
+        conn.commit()
+
+    cursor.close()
+
+
+    session.pop('airline_name')
+    session.pop('flight_num')
+
+    return render_template("purchase_confirm.html", message = message, usertype = usertype)
+
+@app.route('/view_commission', methods = ["GET", "POST"])
+def view_commission():
+    username = session["username"]
+    select = request.form["select"]
+    cursor = conn.cursor()
+
+    book_id = "SELECT booking_agent_id FROM booking_agent WHERE email = \'{}\'"
+    cursor.execute(book_id.format(username))
+    booking_agent_id = cursor.fetchone()[0]
+
+    if select == "no":
+        tot = "SELECT SUM(price * 0.1) FROM flight NATURAL JOIN ticket NATURAL JOIN purchases WHERE booking_agent_id = \'{}\'\
+            and DateDiff(CURDATE(), purchases.purchase_date) <= 30"
+        cursor.execute(tot.format(booking_agent_id))
+        tot_com = cursor.fetchone()[0]
+
+        ave = "SELECT SUM(price * 0.1) / COUNT(ticket_id) FROM flight NATURAL JOIN ticket NATURAL JOIN purchases WHERE booking_agent_id = \'{}\' \
+            and DateDiff(CURDATE(), purchases.purchase_date) <= 30"
+        cursor.execute(ave.format(booking_agent_id))
+        ave_com = cursor.fetchone()[0]
+        sold = "SELECT COUNT(ticket_id) FROM ticket NATURAL JOIN purchases WHERE booking_agent_id = \'{}\' \
+            and DateDiff(CURDATE(), purchases.purchase_date) <= 30"
+        cursor.execute(sold.format(booking_agent_id))
+        tot_sold = cursor.fetchone()[0]
+
+    elif select == "yes":
+        start = request.form["start"]
+        end = request.form["end"]
+        tot = "SELECT SUM(price * 0.1) FROM flight NATURAL JOIN ticket NATURAL JOIN purchases WHERE booking_agent_id = \'{}\'\
+            and purchases.purchase_date between \'{}\' and \'{}\'"
+        cursor.execute(tot.format(booking_agent_id, start, end))
+        tot_com = cursor.fetchone()[0]
+        ave = "SELECT SUM(price * 0.1) / COUNT(ticket_id) FROM flight NATURAL JOIN ticket NATURAL JOIN purchases WHERE booking_agent_id = \'{}\' \
+            and purchases.purchase_date between \'{}\' and \'{}\'"
+        cursor.execute(ave.format(booking_agent_id, start, end))
+        ave_com = cursor.fetchone()[0]
+        sold = "SELECT COUNT(ticket_id) FROM ticket NATURAL JOIN purchases WHERE booking_agent_id = \'{}\' \
+            and purchases.purchase_date between \'{}\' and \'{}\'"
+        cursor.execute(sold.format(booking_agent_id, start, end))
+        tot_sold = cursor.fetchone()[0]
+    if tot_com == None:
+        tot_com = 0
+    if ave_com == None:
+        ave_com = 0
+    if tot_sold == None:
+        tot_sold = 0
+
+    return render_template("booking_agent_page.html", total_commission = round(tot_com,2),average_commission = round(ave_com,2), total_ticket = round(tot_sold,2), username=username)
+
+@app.route('/customers_b')
+def customers_b():
+    usertype = session["usertype"]
+    cursor = conn.cursor()
+
+    username = session["username"]
+    t1 = "SELECT customer_email, name, COUNT(*) FROM (purchases NATURAL JOIN booking_agent) JOIN customer ON customer_email\
+            = customer.email WHERE booking_agent.email = \'{}\' and DateDiff(CURDATE(), purchase_date)<365/2 \
+                GROUP BY customer.email ORDER BY count(*) DESC LIMIT 5"
+    t2 = "SELECT customer_email, name, SUM(price * 0.1)/COUNT(ticket_id) FROM （purchases NATURAL JOIN booking_agent NATURAL JOIN ticket NATURAL JOIN flight) JOIN customer ON customer_email \
+         = customer.email WHERE booking_agent.email = \'{}\' and DateDiff(CURDATE(), purchase_date) < 365\
+              GROUP BY customer.email ORDER BY SUM(price * 0.1)/COUNT(ticket_id) DESC LIMIT 5"
+    cursor.execute(t1.format(username))
+    customer = cursor.fetchall()
+    conn.commit()
+    cursor.execute(t2.format(username))
+    customer_year = cursor.fetchall()
+    conn.commit()
+
+    cursor.close()
+    return render_template('customers.html', customer = customer, customer_y = customer_year, usertype = usertype)
+
+@app.route("/public_info")
+def public_info():
+    scity = request.args.get('scity')
+    dcity = request.args.get('dcity')
+    date_search = request.args.get('date_search')
+    flight_num = request.args.get('flight_num')
+    dateof = request.args.get('dateof')
+    date_check = request.args.get('date_check')
+    flights = None
+    statuses = None
+    cursor = conn.cursor()
+    if scity:
+        query = """select * from flight, airport a1, airport a2
+                where departure_airport = a1.airport_name and a1.airport_city = '{}'
+                and arrival_airport = a2.airport_name and a2.airport_city = '{}'
+                and departure_time LIKE '{}%' and status = 'upcoming'"""
+        cursor.execute(query.format(scity, dcity, date_search))
+        flights = cursor.fetchall()
+    if flight_num:
+        query = """select status from flight
+                where flight_num = '{}' and {}_time LIKE '{}%'"""
+        cursor.execute(query.format(flight_num, dateof, date_check))
+        statuses = cursor.fetchall()
+    cursor.close()
+    return render_template('public_info.html', flights=flights, statuses=statuses)
 
 
 app.secret_key = 'some key that you will never guess'

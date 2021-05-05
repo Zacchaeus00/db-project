@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        {% if username%}
+            <h2>{{username}}</h2>
+        {% endif %}
+    </head>
+    <body>
+        <div>
+            <p>View My Flights</p>
+            <form action = '/view_my_flights', method = "POST">
+                <input type="radio" name = "choice" value = default required>Showing upcoming flights<br>
+			    <input type="radio" name = "choice" value = specify required>Specify some information:<br> <br>
+
+                Please specify your request:<br>
+                <input type="checkbox" name = "info" value = name>departure/arrival city/airport<br>
+                <input type="text" name = "d_name" placeholder = "departure city/airport"> <br>
+                <input type="text" name = "a_name" placeholder = "arrival city/airport"> <br>
+                <input type="checkbox" name = "info" value = date>range of date <br> 
+                <input type="date" name="start" placeholder="start date"><br>
+                <input type="date" name="end" placeholder="end date"><br>
+                <input type="submit" value = Search>
+            </form>
+            <br><br>
+            {% if flights_rec is not none %}
+                {% if flights_rec|length != 0 %}
+                    <table>
+                        <th>airline name</th>
+                        <th>flight number</th>
+                        <th>departure airport</th>
+                        <th>departure time</th>
+                        <th>arrival airport</th>
+                        <th>arrival time</th>
+                        <th>price</th>
+                        <th>status</th>
+                        <th>airplane ID</th>
+                    {% for line in flight_rec %}
+                        <tr>
+                            <td>{{line[0]}}</td>
+                            <td>{{line[1]}}</td>
+                            <td>{{line[2]}}</td>
+                            <td>{{line[3]}}</td>
+                            <td>{{line[4]}}</td>
+                            <td>{{line[5]}}</td>
+                            <td>{{line[6]}}</td>
+                            <td>{{line[7]}}</td>
+                            <td>{{line[8]}}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                {% else %}
+                    <b>You have no scheduled flights.</b><br><br>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div>
+            <p>View my Commission</p>
+            <p>Any requirements?</p>
+            <p>Yes: Specify a date range</p>
+            <p>No: View past 30 days</p>
+            <form action="/view_commission", method = "POST">
+                <input type="radio" name = "select" value = yes required> Yes
+                <input type="radio" name = "select" value = no required> No <br>
+                <input type="date" name="start"> start date <br>
+                <input type="date" name="end"> end date <br>
+                <input type="submit" value = View>
+            </form>
+            <b>Total Commission: </b> {{total_commission}}<br><br>
+            <b>Average Commission per Ticket: </b>{{average_commission}} <br><br>
+            <b>Total Tickets sold: </b>{{total_ticket}}<br><br>
+            <br>
+            <br>
+        </div>
+        <div>
+            <a href='/public_info'>View Public Information</a>
+            <br>
+            <br>
+        </div>
+        <div>
+            <a href='/purchase'>Search/Purchase Ticket</a>
+            <br>
+            <br>
+        </div>
+        <div>
+            <a href="/customers_b">View Top Customers</a>
+            <br>
+            <br>
+
+        </div>
+        <a href='/logout'>Logout</a>
+    </body>
+</html>

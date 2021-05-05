@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>View top customers</title>
+
+    </head>
+    <body>
+        <p>Top Customers past 6 month</p>
+
+        <style type="text/css">
+            table, th, td{
+                border: 1px solid black;
+            }
+        </style>
+
+        <table>
+            <th>customer email</th>
+            <th>customer name</th>
+            <th>number of ticket</th>
+        {% for line in customer %}
+            <tr>
+                <td>{{line[0]}}</td>
+                <td>{{line[1]}}</td>
+                <td>{{line[2]}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <br>
+        <br>
+        <p>Top Customers last year</p>
+
+        <style type="text/css">
+            table, th, td{
+                border: 1px solid black;
+            }
+        </style>
+
+        <table>
+            <th>customer email</th>
+            <th>customer name</th>
+            <th>number of ticket</th>
+        {% for line in customer_y %}
+            <tr>
+                <td>{{line[0]}}</td>
+                <td>{{line[1]}}</td>
+                <td>{{line[2]}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <br>
+        <br>
+        <!-- Draw diagram -->
+    <a href="/booking_agent_page">Go back</a>
+    </body>
+</html>

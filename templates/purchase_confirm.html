@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>Comfirm Purchase Information</title>
+    </head>
+    <body>
+
+        {% if usertype == "customer" %}
+        <form action="/confirm", method = "POST">
+            <input type="submit" value = Confirm>
+        </form>
+        <p>{{message}}</p>
+        <br>
+        <a href="/purchase" onClick = "javascript:history.back(-1);">I need to think about this purchase</a> <br> <br> <br>
+
+
+        <a href="/customer_page">Return to your homepage</a>
+        {% endif %}
+
+        {% if usertype == "booking agent" %}
+        <form action="/confirm", method = "POST">
+            <input type="text" name = "customer_email" placeholder="customer email" required> <br>
+            <input type="submit" value = Confirm> <br>
+        </form>
+        <p>{{message}}</p>
+        <br>
+        <a href="/purchase" onClick = "javascript:history.back(-1);">I need to think about this purchase</a> <br> <br> <br>
+
+
+        <a href="/booking_agent_page">Return to your homepage</a>
+        {% endif %}
+
+    </body> 
+</html>

@@ -1,0 +1,78 @@
+<html>
+    <head>
+        <title> Search for/Purchase Tickets </title>
+    </head>
+    <body>
+        <h2>Search for upcoming flights:</h2>
+			<form action="/search_flights" method="get">
+                <p>Enter information of City</p>
+				<label for="scity">source city:</label>
+				<input type="text" id="scity" name="scity" />
+				<br>
+				<label for="dcity">destination city:</label>
+				<input type="text" id="dcity" name="dcity" />
+				<br>
+                <p> Or enter information of Airport</p>
+                <label for="sair">source airport:</label>
+				<input type="text" id="sair" name="sair" />
+				<br>
+                <label for="dair">destination airport:</label>
+				<input type="text" id="dair" name="dair" />
+                <br>
+				<label for="date_search">date:</label>
+				<input type="date" id="date_search" name="date_search" required>
+				<br>
+				<input type="submit" value="search" />
+			</form>
+            {% if flights is not none %}
+				{% if flights|length == 0 %}
+					<p>no flight found!</p>
+				{% else %}
+					{% for flight in flights %}
+						<p>{{flight}}</p>
+					{% endfor %}
+				{% endif %}
+            {% else %}
+				<p></p>
+			{% endif %}
+        <div>
+            <p>Check flight status:</p>
+			<form action="/search_flights" method="get">
+				<label for="flight_num">flight number:</label>
+				<input type="text" id="flight_num" name="flight_num" required>
+				<br>
+				<label for="isdept">departure</label>
+				<input type="radio" id="isdept" name="dateof" value="departure" checked>
+				<br>
+				<label for="isarvl">arrival</label>
+				<input type="radio" id="isarvl" name="dateof" value="arrival">
+				<br>
+				<label for="date_check">date:</label>
+				<input type="date" id="date_check" name="date_check" required>
+				<br>
+				<input type="submit" value="check status" />
+			</form>
+			<!-- <p>{{statuses}}</p> -->
+			{% if statuses is not none %}
+				{% if statuses|length == 0 %}
+					<p>no status found!</p>
+				{% else %}
+					{% for status in statuses %}
+						<p>{{status}}</p>
+					{% endfor %}
+				{% endif %}
+            {% else %}
+				<p></p>
+			{% endif %}
+        </div>
+        <div>
+            <form action="/purchasing", method = "POST">
+                <p>Enter the information of the ticket you want to purchase</p>
+                <input type="text", name = "airline_name", placeholder = "airline name" required>
+                <input type="text", name = "flight_num", placeholder="flight number"> 
+                <button tpye = "submit">purchase</button> <br><br>
+            </form>
+        </div>
+        <a href="#" onClick = "javascript:history.back(-1);">Go back</a>
+    </body>
+</html>

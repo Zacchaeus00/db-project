@@ -181,7 +181,7 @@ def loginAuthB():
         # creates a session for the the user
         # session is a built in
         session['username'] = username
-        session['usertype'] = "booking_agent"
+        session['usertype'] = "booking agent"
         return redirect(url_for('booking_agent_page'))
     else:
         # returns an error message to the html page
@@ -971,7 +971,7 @@ def view_my_flights():
     if choice == "default":
         out = None
         # cursor used to send queries
-
+        print(session["username"])
         # executes query
         if usertype == "customer":
             query = "SELECT * FROM flight where status = 'upcoming' and flight_num in (SELECT flight_num FROM purchases NATURAL JOIN ticket NATURAL JOIN customer WHERE name = \'{}\')"
@@ -1065,9 +1065,10 @@ def view_my_flights():
                     out.append(i)
     cursor.close()
     if usertype == "customer":
-        return render_template("customer_page.html", username = session["username"],flights_rec = out)
+        print(out)
+        return render_template("customer_page.html", username = session["username"],flights_rec = out,flights_found=None)
     elif usertype == "booking agent":
-        return render_template("booking_agent_page.html", username = session["username"],flights_rec = out)
+        return render_template("booking_agent_page.html", username = session["username"],flights_rec = out,flight_found = None)
 
 @app.route('/track_my_spending_c')
 def track_my_spending_c():
@@ -1084,12 +1085,11 @@ def spending_c():
             and DateDiff(CURDATE(), purchase_date) <= 365"
         cursor.execute(year.format(session["username"]))
         spend = cursor.fetchone()[0]
-        month = "SELECT SUM(price),convert(varchar(7),purchase_date) FROM purchases NATURAL JOIN ticket NATURAL JOIN\
-            flight NATURAL JOIN customer WHERE name = \'{}\' and DateDiff(CURDATE(), purchase_date) <= 365/2 GROUP BY convert(varchar(7),purchase_date)"
+        month = "SELECT SUM(price),convert(purchase_date, char(7)) FROM purchases NATURAL JOIN ticket NATURAL JOIN\
+            flight NATURAL JOIN customer WHERE name = \'{}\' and DateDiff(CURDATE(), purchase_date) <= 365/2 GROUP BY convert(purchase_date, char(7))"
         cursor.execute(month.format(session["username"]))
         spent = cursor.fetchall()
 
-        return render_template('track_my_spending_c.html', spending = spend, spent = spent)
     elif choice == "specify":
         start = request.form["start"]
         end = request.form["end"]
@@ -1098,12 +1098,20 @@ def spending_c():
         cursor.execute(year.format(session["username"], start, end))
         spend = cursor.fetchone()[0]
 
-        month = "SELECT SUM(price),convert(varchar(7),purchase_date) FROM purchases NATURAL JOIN ticket NATURAL JOIN\
-            flight NATURAL JOIN customer WHERE name = \'{}\' and purchase_date between \'{}\' and \'{}\' GROUP BY convert(varchar(7),purchase_date)"
+        month = "SELECT SUM(price),convert(purchase_date, char(7)) FROM purchases NATURAL JOIN ticket NATURAL JOIN\
+            flight NATURAL JOIN customer WHERE name = \'{}\' and purchase_date between \'{}\' and \'{}\' GROUP BY convert(purchase_date, char(7))"
         cursor.execute(month.format(session["username"], start, end))
         spent = cursor.fetchall()
-
-        return render_template('track_my_spending_c.html', spending = spend, spent = spent)
+    value = []
+    label = []
+    for i in spent:
+        value.append(i[0])
+        label.append(i[1])
+    if len(value) >0:
+        maxi = max(value)
+    else:
+        maxi = 100
+    return render_template('track_my_spending_c.html', spending = spend, spent = spent, value = value, label = label,maxi = maxi)
 
 @app.route("/purchase")
 def purchase():
@@ -1173,8 +1181,14 @@ def search_flights():
         statuses = cursor.fetchall()
     conn.commit()
     cursor.close()
+    air_name = []
+    flight_num = []
+    le = len(flights)
+    for i in flights:
+        air_name.append(i[0])
+        flight_num.append(i[1])
     if usertype == "booking agent" or usertype == "customer":
-        return render_template("purchase.html", flights = flights, statuses = statuses)
+        return render_template("purchase.html", flights = flights, statuses = statuses, air_name = air_name, flight_num = flight_num,length = le)
 
 
 
@@ -1315,10 +1329,10 @@ def customers_b():
     cursor = conn.cursor()
 
     username = session["username"]
-    t1 = "SELECT customer_email, name, COUNT(*) FROM (purchases NATURAL JOIN booking_agent) JOIN customer ON customer_email\
+    t1 = "SELECT customer_email, name, COUNT(*) FROM purchases NATURAL JOIN booking_agent JOIN customer ON customer_email\
             = customer.email WHERE booking_agent.email = \'{}\' and DateDiff(CURDATE(), purchase_date)<365/2 \
                 GROUP BY customer.email ORDER BY count(*) DESC LIMIT 5"
-    t2 = "SELECT customer_email, name, SUM(price * 0.1)/COUNT(ticket_id) FROM （purchases NATURAL JOIN booking_agent NATURAL JOIN ticket NATURAL JOIN flight) JOIN customer ON customer_email \
+    t2 = "SELECT customer_email, name, SUM(price * 0.1)/COUNT(ticket_id) FROM purchases NATURAL JOIN booking_agent NATURAL JOIN ticket NATURAL JOIN flight JOIN customer ON customer_email \
          = customer.email WHERE booking_agent.email = \'{}\' and DateDiff(CURDATE(), purchase_date) < 365\
               GROUP BY customer.email ORDER BY SUM(price * 0.1)/COUNT(ticket_id) DESC LIMIT 5"
     cursor.execute(t1.format(username))
@@ -1327,9 +1341,28 @@ def customers_b():
     cursor.execute(t2.format(username))
     customer_year = cursor.fetchall()
     conn.commit()
-
+    email = []
+    name = []
+    ticket = []
+    email_y = []
+    name_y = []
+    comms_y = []
+    for i in customer:
+        email.append(i[0])
+        name.append(i[1])
+        ticket.append(i[2])
+    for i in customer_year:
+        email_y.append(i[0])
+        name_y.append(i[1])
+        comms_y.append(i[2])
+    if len(ticket) >0:
+        maxi1 = max(ticket)
+        maxi2 = max(comms_y)
+    else:
+        maxi1 = 100
+        maxi2 = 100
     cursor.close()
-    return render_template('customers.html', customer = customer, customer_y = customer_year, usertype = usertype)
+    return render_template('customer.html', customer = customer, customer_y = customer_year, usertype = usertype,email = email, namee = name, ticket=ticket, email_y = email_y, name_y = name_y,comms_y=comms_y, maxi1 = maxi1, maxi2 = maxi2)
 
 @app.route("/public_info")
 def public_info():

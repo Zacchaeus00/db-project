@@ -4,6 +4,12 @@
         {% if username%}
             <h2>{{username}}</h2>
         {% endif %}
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    </style>
     </head>
     <body>
         <div>
@@ -34,7 +40,7 @@
                         <th>price</th>
                         <th>status</th>
                         <th>airplane ID</th>
-                    {% for line in flight_rec %}
+                    {% for line in flights_rec %}
                         <tr>
                             <td>{{line[0]}}</td>
                             <td>{{line[1]}}</td>

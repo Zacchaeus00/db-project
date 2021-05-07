@@ -1,7 +1,14 @@
 <html>
     <head>
         <title> Search for/Purchase Tickets </title>
+	<style>
+	table, th, td {
+		border: 1px solid black;
+		border-collapse: collapse;
+	}
+	</style>		
     </head>
+
     <body>
         <h2>Search for upcoming flights:</h2>
 			<form action="/search_flights" method="get">
@@ -28,9 +35,36 @@
 				{% if flights|length == 0 %}
 					<p>no flight found!</p>
 				{% else %}
-					{% for flight in flights %}
-						<p>{{flight}}</p>
+					<table>
+						<th>Airline name</th>
+						<th>Flight number</th>
+						<th>Departure airport</th>
+						<th>Departure time</th>
+						<th>Arrival airport</th>
+						<th>Arrival time</th>
+						<th>Price</th>
+						<th>Status</th>
+						<th>Airplane ID</th>
+						<th>Purchase</th>
+					{% for line in flights %}
+						<tr>
+							<td>{{line[0]}}</td>
+							<td>{{line[1]}}</td>
+							<td>{{line[2]}}</td>
+							<td>{{line[3]}}</td>
+							<td>{{line[4]}}</td>
+							<td>{{line[5]}}</td>
+							<td>{{line[6]}}</td>
+							<td>{{line[7]}}</td>
+							<td>{{line[8]}}</td>
+							<td><form action="/purchasing", method = "POST">
+								<input type="hidden" name="airline_name" value = "{{air_name[i]}}">
+								<input type="hidden" name="flight_num" value = {{flight_num[i]}}>
+								<input type="submit" value = "Buy Ticket">
+							</form></td>
+						</tr>
 					{% endfor %}
+					</table>
 				{% endif %}
             {% else %}
 				<p></p>
@@ -59,6 +93,7 @@
 				{% else %}
 					{% for status in statuses %}
 						<p>{{status}}</p>
+
 					{% endfor %}
 				{% endif %}
             {% else %}

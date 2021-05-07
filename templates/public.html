@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<style>
+		table, th, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+		}
+		</style>	
 		<meta charset="utf-8">
 		<title>Public Page</title>
 		<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	</head>
 	<body>
 		{% if usertype == "customer" %}
-			<a href="/homeC">my home page</a>
+			<a href="/customer_page">my home page</a>
 		{% elif usertype == "booking_agent" %}
-			<a href="/homeB">my home page</a>
+			<a href="/booking_agent_page">my home page</a>
 		{% elif usertype == "staff" %}
 			<a href="/homeS">my home page</a>
 		{% else %}
@@ -45,9 +51,30 @@
 				{% if flights|length == 0 %}
 					<p>no flight found!</p>
 				{% else %}
-					{% for flight in flights %}
-						<p>{{flight}}</p>
+					<table>
+						<th>Airline name</th>
+						<th>Flight number</th>
+						<th>Departure airport</th>
+						<th>Departure time</th>
+						<th>Arrival airport</th>
+						<th>Arrival time</th>
+						<th>Price</th>
+						<th>Status</th>
+						<th>Airplane ID</th>
+					{% for line in flights %}
+						<tr>
+							<td>{{line[0]}}</td>
+							<td>{{line[1]}}</td>
+							<td>{{line[2]}}</td>
+							<td>{{line[3]}}</td>
+							<td>{{line[4]}}</td>
+							<td>{{line[5]}}</td>
+							<td>{{line[6]}}</td>
+							<td>{{line[7]}}</td>
+							<td>{{line[8]}}</td>
+						</tr>
 					{% endfor %}
+					</table>
 				{% endif %}
 			{% endif %}
 		</div>

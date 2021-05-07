@@ -4,6 +4,12 @@
         {% if username%}
             <h2>{{username}}</h2>
         {% endif %}
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    </style>
     </head>
     <body>
         
@@ -26,16 +32,16 @@
             {% if flights_rec is not none %}
                 {% if flights_rec|length != 0 %}
                     <table>
-                        <th>airline name</th>
-                        <th>flight number</th>
-                        <th>departure airport</th>
-                        <th>departure time</th>
-                        <th>arrival airport</th>
-                        <th>arrival time</th>
-                        <th>price</th>
-                        <th>status</th>
-                        <th>airplane ID</th>
-                    {% for line in flight_rec %}
+                        <th>Airline name</th>
+                        <th>Flight number</th>
+                        <th>Departure airport</th>
+                        <th>Departure time</th>
+                        <th>Arrival airport</th>
+                        <th>Arrival time</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Airplane ID</th>
+                    {% for line in flights_rec %}
                         <tr>
                             <td>{{line[0]}}</td>
                             <td>{{line[1]}}</td>
@@ -49,11 +55,15 @@
                         </tr>
                     {% endfor %}
                     </table>
+                    {% for line in flight_rec %}
+                        {{line}}
+                    {% endfor %}
                 {% else %}
                     <b>You have no scheduled flights.</b><br><br>
                 {% endif %}
             {% endif %}
         </div>
+        <br><br><br>
         <div>
             <a href="/purchase">Search/Purchase Flights</a>
             {% if flights_found is not none %}

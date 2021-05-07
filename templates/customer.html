@@ -1,9 +1,12 @@
 <html>
     <head>
+        <meta charset="utf-8" />
+  		<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
         <title>View top customers</title>
 
     </head>
     <body>
+        <a href="/booking_agent_page">Go back</a>
         <p>Top Customers past 6 month</p>
 
         <style type="text/css">
@@ -26,6 +29,49 @@
         </table>
         <br>
         <br>
+        <canvas id="chart1" width="600" height="400"></canvas>
+				<script>
+					// bar chart data
+					var barData = {
+						labels: [
+						{% for item in namee %}
+						"{{ item }}",
+						{% endfor %}
+						],
+				
+						datasets : [{
+						fillColor: "rgba(151,187,205,0.2)",
+						strokeColor: "rgba(151,187,205,1)",
+						pointColor: "rgba(151,187,205,1)",
+						data : [
+							{% for item in ticket %}
+							"{{ item }}",
+							{% endfor %}
+						]
+						}
+						]
+					}
+				
+					// get bar chart canvas
+					var mychart = document.getElementById("chart1").getContext("2d");
+				
+						steps = 10
+						max = {{maxi1}}
+				
+					// draw bar chart
+						new Chart(mychart).Bar(barData, {
+						scaleOverride: true,
+						scaleSteps: steps,
+						scaleStepWidth: Math.ceil(max / steps),
+						scaleStartValue: 0,
+						scaleShowVerticalLines: true,
+						scaleShowGridLines : true,
+						barShowStroke : true,
+						scaleShowLabels: true
+					}
+				);
+			
+				</script>
         <p>Top Customers last year</p>
 
         <style type="text/css">
@@ -48,7 +94,50 @@
         </table>
         <br>
         <br>
+        <canvas id="chart2" width="600" height="400"></canvas>
+				<script>
+					// bar chart data
+					var barData = {
+						labels: [
+						{% for item in name_y %}
+						"{{ item }}",
+						{% endfor %}
+						],
+				
+						datasets : [{
+						fillColor: "rgba(151,187,205,0.2)",
+						strokeColor: "rgba(151,187,205,1)",
+						pointColor: "rgba(151,187,205,1)",
+						data : [
+							{% for item in comms_y %}
+							"{{ item }}",
+							{% endfor %}
+						]
+						}
+						]
+					}
+				
+					// get bar chart canvas
+					var mychart = document.getElementById("chart2").getContext("2d");
+				
+						steps = 10
+						max = {{maxi2}}
+				
+					// draw bar chart
+						new Chart(mychart).Bar(barData, {
+						scaleOverride: true,
+						scaleSteps: steps,
+						scaleStepWidth: Math.ceil(max / steps),
+						scaleStartValue: 0,
+						scaleShowVerticalLines: true,
+						scaleShowGridLines : true,
+						barShowStroke : true,
+						scaleShowLabels: true
+					}
+				);
+			
+				</script>
         <!-- Draw diagram -->
-    <a href="/booking_agent_page">Go back</a>
+    
     </body>
 </html>

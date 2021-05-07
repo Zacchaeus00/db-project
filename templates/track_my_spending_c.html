@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="utf-8" />
+  		<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
         <h2>Your spendings for previous years/months</h2>
     </head>
 	<body>
@@ -9,7 +11,7 @@
         </div>
         <div>
             <form action="/spending_c" method = "POST">
-                <input type="radio" name = "choice" value = default required> Last Year's Soending <br>
+                <input type="radio" name = "choice" value = default required> Last Year's Spending <br>
 			    <input type="radio" name = "choice" value = specify required> Specify a range of date <br>
                 <input type="date" name = "start"> start date <br>
 			    <input type="date" name = "end"> end date <br>
@@ -17,10 +19,9 @@
             </form>
             <br><br>
         </div>
-        <b> Your Spending</b>{{spending}}
+        <b> Your Spending</b>{{spending}}<br><br>
 
-        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-
+				
 		<table id = "datatable">
 			<thead>
 				<th>Month</th>
@@ -35,5 +36,53 @@
 			{% endfor %}
 			</tbody>
 		</table>
+		<div>
+			<canvas id="chart" width="600" height="400"></canvas>
+				<script>
+					// bar chart data
+					var barData = {
+						labels: [
+						{% for item in label %}
+						"{{ item }}",
+						{% endfor %}
+						],
+				
+						datasets : [{
+						fillColor: "rgba(151,187,205,0.2)",
+						strokeColor: "rgba(151,187,205,1)",
+						pointColor: "rgba(151,187,205,1)",
+						data : [
+							{% for item in value %}
+							"{{ item }}",
+							{% endfor %}
+						]
+						}
+						]
+					}
+				
+					// get bar chart canvas
+					var mychart = document.getElementById("chart").getContext("2d");
+				
+						steps = 10
+						max = {{maxi}}
+				
+					// draw bar chart
+						new Chart(mychart).Bar(barData, {
+						scaleOverride: true,
+						scaleSteps: steps,
+						scaleStepWidth: Math.ceil(max / steps),
+						scaleStartValue: 0,
+						scaleShowVerticalLines: true,
+						scaleShowGridLines : true,
+						barShowStroke : true,
+						scaleShowLabels: true
+					}
+				);
+			
+				</script>
+		  </div>
     </body>
 </html>
+
+
+

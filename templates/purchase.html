@@ -58,8 +58,8 @@
 							<td>{{line[7]}}</td>
 							<td>{{line[8]}}</td>
 							<td><form action="/purchasing", method = "POST">
-								<input type="hidden" name="airline_name" value = "{{air_name[i]}}">
-								<input type="hidden" name="flight_num" value = {{flight_num[i]}}>
+								<input type="hidden" name="airline_name" value = "{{line[0]}}">
+								<input type="hidden" name="flight_num" value = {{line[1]}}>
 								<input type="submit" value = "Buy Ticket">
 							</form></td>
 						</tr>

@@ -1295,7 +1295,7 @@ def confirm():
 
 
     cursor = conn.cursor(prepared=True)
-    iticket = "Insert into ticket values(\'{}\',%s,%s)"
+    iticket = "Insert into ticket values(%s,%s,%s)"
     cursor.execute(iticket,(ticket_id, airline_name, flight_num))
     conn.commit()
 
@@ -1306,7 +1306,7 @@ def confirm():
         # stores the results in a variable
         data = decode_1d(cursor.fetchone())
         username = data[0]
-        ipurchase = "Insert into purchases (ticket_id, customer_email,purchase_date) values(\'{}\',%s,\'{}\')"
+        ipurchase = "Insert into purchases (ticket_id, customer_email,purchase_date) values(%s,%s,%s)"
         cursor.execute(ipurchase,(ticket_id, username,datetime.datetime.today().strftime('%Y-%m-%d')))
         conn.commit()
 
@@ -1317,7 +1317,7 @@ def confirm():
         booking_agent_id = decode_1d(cursor.fetchone())
         # insert to purchases
         customer_email = request.form["customer_email"]
-        ipurchase = "Insert into purchases (ticket_id, customer_email, booking_agent_id,purchase_date) values(\'{}\',%s,%s,\'{}\')"
+        ipurchase = "Insert into purchases (ticket_id, customer_email, booking_agent_id,purchase_date) values(%s,%s,%s,%s)"
         cursor.execute(ipurchase,(ticket_id, customer_email, booking_agent_id[0],datetime.datetime.today().strftime('%Y-%m-%d')))
         conn.commit()
 

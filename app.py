@@ -393,8 +393,8 @@ def registerAuthS():
 
 @app.route("/homeS")
 def homeS():
-    if "username" in session:
-        return render_template('home_s.html')
+    if "airline_name" in session:
+        return render_template('home_s.html', airline_name=session["airline_name"], username=session["username"])
     else:
         return redirect(url_for('public'))
 
@@ -614,7 +614,7 @@ def staff_change_flights_status():
         res = "notfound"
         cursor.close()
         return render_template("staff_change_flights_status.html", res=res)
-    airline_name = query[0][0]
+    airline_name = flights[0][0]
     if airline_name != session["airline_name"]:
         res = "noaccess"
         cursor.close()
@@ -634,7 +634,7 @@ def staff_change_flights_status():
         res = "error"
     cursor.close()
 
-    return render_template("staff_change_flights_status.html", res=res)
+    return render_template("staff_change_flights_status.html", res=res, airline_name=airline_name)
 
 
 @ app.route("/staff_add_airplane")

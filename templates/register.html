@@ -7,9 +7,6 @@
     </head>
     <body>
         <div>
-            <p>{{error}}</p>
-        </div>
-        <div>
             <a href="/register_c">I'm a Customer</a>
         </div>
         <div>
@@ -18,6 +15,9 @@
         <div>
             <a href="/register_b">I'm a Booking Agent</a>
         </div>
+        {% if error %}
+                <p class="error"><strong>Error:</strong> {{error}}</p>
+        {% endif %}
         <a href="/">Back to public page</a>
     </body>
 </html>

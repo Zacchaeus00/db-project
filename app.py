@@ -1126,7 +1126,8 @@ def spending_c():
         cursor.execute(year,(session["username"],))
         spend = decode_1d(cursor.fetchone())[0]
         month = "SELECT SUM(price),convert(purchase_date, char(7)) FROM purchases NATURAL JOIN ticket NATURAL JOIN\
-            flight NATURAL JOIN customer WHERE name =%s and DateDiff(CURDATE(), purchase_date) <= 365/2 GROUP BY convert(purchase_date, char(7))"
+            flight NATURAL JOIN customer WHERE name =%s and DateDiff(CURDATE(), purchase_date) <= 365/2 and DateDiff(CURDATE(), purchase_date) >= 0 \
+            GROUP BY convert(purchase_date, char(7))"
         cursor.execute(month,(session["username"],))
         spent = decode_2d(cursor.fetchall())
 
@@ -1142,6 +1143,7 @@ def spending_c():
             flight NATURAL JOIN customer WHERE name =%s and purchase_date between%s and%s GROUP BY convert(purchase_date, char(7))"
         cursor.execute(month,(session["username"], start, end))
         spent = decode_2d(cursor.fetchall())
+    spent.sort(key=lambda x: x[1])
     value = []
     label = []
     for i in spent:

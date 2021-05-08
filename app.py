@@ -803,6 +803,7 @@ def staff_view_reports():
             from purchases natural join ticket
             where airline_name = %s
             and purchase_date > %s
+            and purchase_date < curdate()
             """
     cursor.execute(query,(session["airline_name"], last_year))
     amt_tck_ly = str(cursor.fetchall()[0][0])

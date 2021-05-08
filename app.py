@@ -606,12 +606,17 @@ def staff_change_flights_status():
     status = request.args.get("status")
 
     cursor = conn.cursor(prepared=True)
-    query = """select * from flight
+    query = """select airline_name from flight
     where flight_num = %s"""
     cursor.execute(query,(flight_num,))
     flights = decode_2d(cursor.fetchall())
     if not flights:
         res = "notfound"
+        cursor.close()
+        return render_template("staff_change_flights_status.html", res=res)
+    airline_name = query[0][0]
+    if airline_name != session["airline_name"]:
+        res = "noaccess"
         cursor.close()
         return render_template("staff_change_flights_status.html", res=res)
     query = """update flight
@@ -739,7 +744,6 @@ def staff_view_booking_agents():
     # remove password
     for i in range(len(data3)):
         del data3[i][1]
-
     cursor.close()
     kwargs = dict(
         data1=data1,

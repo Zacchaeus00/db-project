@@ -26,6 +26,8 @@
                 <p>Invalid input!</p>
             {% elif res == "notfound" %}
                 <p>Flight not found!</p>
+            {%elif res=="noaccess"%}
+                <p>You do not have access to that flight</p>
             {% else %}
                 <p>Status of flight {{res}} was successfully changed!</p>
             {% endif %}

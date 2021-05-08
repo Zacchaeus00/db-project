@@ -15,17 +15,27 @@
             <input type="date" id="end_date" name="end_date" value="{{end_date}}" required>
             <br>
             <label for="src">source</label>
-            <select name="stype" value="{{stype}}">
-                <option value="city">city</option>
-                <option value="airport">airport</option>
+            <select name="stype">
+                {% if stype == "airport" %}
+                    <option value="city">city</option>
+                    <option value="airport" selected="selected">airport</option>
+                {%else%}
+                    <option value="city" selected="selected">city</option>
+                    <option value="airport">airport</option>
+                {%endif%}
             </select>
             <label for="src">name:</label>
             <input type="text" id="src" name="src" value="{{src}}"  placeholder="optional"/>
             <br>
             <label for="dst">destination</label>
-            <select name="dtype" value="{{dtype}}">
-                <option value="city">city</option>
-                <option value="airport">airport</option>
+            <select name="dtype">
+                {% if dtype == "airport" %}
+                    <option value="city">city</option>
+                    <option value="airport" selected="selected">airport</option>
+                {%else%}
+                    <option value="city" selected="selected">city</option>
+                    <option value="airport">airport</option>
+                {%endif%}
             </select>
             <label for="dst">name:</label>
             <input type="text" id="dst" name="dst" value="{{dst}}" placeholder="optional" />

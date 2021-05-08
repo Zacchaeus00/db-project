@@ -1214,8 +1214,8 @@ def search_flights():
             query = """select * from flight, airport a1, airport a2
                     where departure_airport = a1.airport_name and a1.airport_city = %s
                     and arrival_airport = a2.airport_name and a2.airport_city = %s
-                    and departure_time LIKE '{}%' and status = 'upcoming'"""
-            cursor.execute(query,(scity, dcity, date_search))
+                    and departure_time LIKE %s and status = 'upcoming'"""
+            cursor.execute(query,(scity, dcity, date_search+'%'))
             flights = decode_2d(cursor.fetchall())
     elif sair:
         if (sair not in airports) or (dair not in airports):
@@ -1226,13 +1226,13 @@ def search_flights():
             query = """select * from flight, airport a1, airport a2
                     where departure_airport = a1.airport_name and a1.airport_name = %s
                     and arrival_airport = a2.airport_name and a2.airport_name = %s
-                    and departure_time LIKE '{}%' and status = 'upcoming'"""
-            cursor.execute(query,(sair, dair, date_search))
+                    and departure_time LIKE %s and status = 'upcoming'"""
+            cursor.execute(query,(sair, dair, date_search+'%'))
             flights = decode_2d(cursor.fetchall())
     elif flight_num:
         query = """select status from flight
-                where flight_num = %s and {}_time LIKE '{}%'"""
-        cursor.execute(query,(flight_num, dateof, date_check))
+                where flight_num = %s and {}_time LIKE %s"""
+        cursor.execute(query,(flight_num, dateof, date_check+'%'))
         statuses = decode_2d(cursor.fetchall())
     conn.commit()
     cursor.close()
@@ -1434,13 +1434,13 @@ def public_info():
         query = """select * from flight, airport a1, airport a2
                 where departure_airport = a1.airport_name and a1.airport_city = %s
                 and arrival_airport = a2.airport_name and a2.airport_city = %s
-                and departure_time LIKE '{}%' and status = 'upcoming'"""
-        cursor.execute(query,(scity, dcity, date_search))
+                and departure_time LIKE %s and status = 'upcoming'"""
+        cursor.execute(query,(scity, dcity, date_search+'%'))
         flights = decode_2d(cursor.fetchall())
     if flight_num:
         query = """select status from flight
-                where flight_num = %s and {}_time LIKE '{}%'"""
-        cursor.execute(query,(flight_num, dateof, date_check))
+                where flight_num = %s and {}_time LIKE %s""".format(dateof)
+        cursor.execute(query,(flight_num, date_check+'%'))
         statuses = decode_2d(cursor.fetchall())
     cursor.close()
     return render_template('public_info.html', flights=flights, statuses=statuses)

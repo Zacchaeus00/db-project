@@ -6,7 +6,7 @@
 			border: 1px solid black;
 			border-collapse: collapse;
 		}
-		</style>	
+		</style>
 		<meta charset="utf-8">
 		<title>Public Page</title>
 		<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
@@ -14,7 +14,7 @@
 	<body>
 		{% if usertype == "customer" %}
 			<a href="/customer_page">my home page</a>
-		{% elif usertype == "booking_agent" %}
+		{% elif usertype == "booking agent" %}
 			<a href="/booking_agent_page">my home page</a>
 		{% elif usertype == "staff" %}
 			<a href="/homeS">my home page</a>

@@ -308,8 +308,9 @@ def registerAuthC():
                                   phone_number, passport_number, passport_expiration, passport_country, date_of_birth))
         conn.commit()
         cursor.close()
-        flash("You are logged in")
-        return redirect(url_for('public'))
+        session["username"] = username
+        session["usertype"] = "customer"
+        return redirect(url_for('customer_page'))
 
 # Authenticates the register Booking Agent
 
@@ -343,8 +344,9 @@ def registerAuthB():
         cursor.execute(ins,(email, password, booking_agent_id))
         conn.commit()
         cursor.close()
-        flash("You are logged in")
-        return redirect(url_for('public'))
+        session["username"] = email
+        session["usertype"] = "booking agent"
+        return redirect(url_for('booking_agent_page'))
 
 # Authenticates the register Airline Staff
 
@@ -383,13 +385,19 @@ def registerAuthS():
                                   last_name, date_of_birth, airline_name))
         conn.commit()
         cursor.close()
-        flash("You are logged in")
-        return redirect(url_for('public'))
+        session["username"] = username
+        session["usertype"] = "staff"
+        session["airline_name"] = airline_name
+        return redirect(url_for('homeS'))
 
 
 @app.route("/homeS")
 def homeS():
-    return render_template('home_s.html')
+    if "username" in session:
+        return render_template('home_s.html')
+    else:
+        return redirect(url_for('public'))
+
 
 
 @app.route('/logout')
@@ -997,12 +1005,16 @@ def customer_page():
     if "username" in session:
         username = session["username"]
         return render_template("/customer_page.html", username = "Welcome! "+username, flights_rec = None, flights_found = None)
+    else:
+        return redirect(url_for('public'))
 
 @app.route('/booking_agent_page')
 def booking_agent_page():
     if "username" in session:
         username = session["username"]
         return render_template("/booking_agent_page.html", username = "Welcome! "+username, flights_rec = None, flights_found = None)
+    else:
+        return redirect(url_for('public'))
 
 @app.route('/view_my_flights', methods = ["GET", "POST"])
 def view_my_flights():

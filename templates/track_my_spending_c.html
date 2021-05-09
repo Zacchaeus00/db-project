@@ -4,6 +4,7 @@
 		<meta charset="utf-8" />
   		<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
         <h2>Your spendings for previous years/months</h2>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     </head>
 	<body>
         <div>
@@ -21,7 +22,7 @@
         </div>
         <b> Your Spending</b>{{spending}}<br><br>
 
-				
+
 		<table id = "datatable">
 			<thead>
 				<th>Month</th>
@@ -46,7 +47,7 @@
 						"{{ item }}",
 						{% endfor %}
 						],
-				
+
 						datasets : [{
 						fillColor: "rgba(151,187,205,0.2)",
 						strokeColor: "rgba(151,187,205,1)",
@@ -59,13 +60,13 @@
 						}
 						]
 					}
-				
+
 					// get bar chart canvas
 					var mychart = document.getElementById("chart").getContext("2d");
-				
+
 						steps = 10
 						max = {{maxi}}
-				
+
 					// draw bar chart
 						new Chart(mychart).Bar(barData, {
 						scaleOverride: true,
@@ -78,7 +79,7 @@
 						scaleShowLabels: true
 					}
 				);
-			
+
 				</script>
 		  </div>
     </body>

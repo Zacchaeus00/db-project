@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>Customer Register</title>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     </head>
     <body>
@@ -28,6 +29,7 @@
             <input type="text" name = "passport_country" placeholder="passport_country" required/> </br>
             <p>Please tell us your your Birth date</p>
             <input type="date" name = "date_of_birth" placeholder="date_of_birth" required/> </br>
+            <div class="g-recaptcha" data-sitekey="6LcI1MwaAAAAADy2XuEdPDbmQaUGRwPKUmMWi7rt"></div><br>
         	<input type="submit" value = Register />
         	{% if error %}
         		<p class="error"><strong>Error:</strong> {{error}}</p>

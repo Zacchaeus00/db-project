@@ -3,7 +3,7 @@
         <meta charset="utf-8" />
   		<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
         <title>View top customers</title>
-
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     </head>
     <body>
         <a href="/booking_agent_page">Go back</a>
@@ -38,7 +38,7 @@
 						"{{ item }}",
 						{% endfor %}
 						],
-				
+
 						datasets : [{
 						fillColor: "rgba(151,187,205,0.2)",
 						strokeColor: "rgba(151,187,205,1)",
@@ -51,13 +51,13 @@
 						}
 						]
 					}
-				
+
 					// get bar chart canvas
 					var mychart = document.getElementById("chart1").getContext("2d");
-				
+
 						steps = 10
 						max = {{maxi1}}
-				
+
 					// draw bar chart
 						new Chart(mychart).Bar(barData, {
 						scaleOverride: true,
@@ -70,7 +70,7 @@
 						scaleShowLabels: true
 					}
 				);
-			
+
 				</script>
         <p>Top Customers last year</p>
 
@@ -103,7 +103,7 @@
 						"{{ item }}",
 						{% endfor %}
 						],
-				
+
 						datasets : [{
 						fillColor: "rgba(151,187,205,0.2)",
 						strokeColor: "rgba(151,187,205,1)",
@@ -116,13 +116,13 @@
 						}
 						]
 					}
-				
+
 					// get bar chart canvas
 					var mychart = document.getElementById("chart2").getContext("2d");
-				
+
 						steps = 10
 						max = {{maxi2}}
-				
+
 					// draw bar chart
 						new Chart(mychart).Bar(barData, {
 						scaleOverride: true,
@@ -135,9 +135,9 @@
 						scaleShowLabels: true
 					}
 				);
-			
+
 				</script>
         <!-- Draw diagram -->
-    
+
     </body>
 </html>

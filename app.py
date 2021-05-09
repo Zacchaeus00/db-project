@@ -285,7 +285,15 @@ def registerAuthC():
     passport_expiration = request.form["passport_expiration"]
     passport_country = request.form["passport_country"]
     date_of_birth = request.form["date_of_birth"]
-
+    recap = request.form["g-recaptcha-response"]
+    data = {"secret": RECAPTCHA_SECRET,
+            "response": recap}
+    url = "https://www.google.com/recaptcha/api/siteverify"
+    response = requests.post(url, data)
+    response = requests.models.Response.json(response)
+    if not response["success"]:
+        error = "reCAPTCHA test failed"
+        return render_template('register.html', error=error)
 #   if not len(password) >= 4:
 #                flash("Password length must be at least 4 characters")
  #               return redirect(request.url)
@@ -324,6 +332,15 @@ def registerAuthB():
     email = request.form['email']
     password = request.form['password']
     booking_agent_id = request.form['booking_agent_id']
+    recap = request.form["g-recaptcha-response"]
+    data = {"secret": RECAPTCHA_SECRET,
+            "response": recap}
+    url = "https://www.google.com/recaptcha/api/siteverify"
+    response = requests.post(url, data)
+    response = requests.models.Response.json(response)
+    if not response["success"]:
+        error = "reCAPTCHA test failed"
+        return render_template('register.html', error=error)
 
 #   if not len(password) >= 4:
 #                flash("Password length must be at least 4 characters")
@@ -404,8 +421,8 @@ def registerAuthS():
 
 @app.route("/homeS")
 def homeS():
-    if "username" in session:
-        return render_template('home_s.html')
+    if "airline_name" in session and "username" in session:
+        return render_template('home_s.html', username=session["username"], airline_name=session["airline_name"])
     else:
         return redirect(url_for('public'))
 

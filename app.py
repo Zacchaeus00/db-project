@@ -393,8 +393,8 @@ def registerAuthS():
 
 @app.route("/homeS")
 def homeS():
-    if "airline_name" in session:
-        return render_template('home_s.html', airline_name=session["airline_name"], username=session["username"])
+    if "username" in session:
+        return render_template('home_s.html')
     else:
         return redirect(url_for('public'))
 
@@ -614,7 +614,7 @@ def staff_change_flights_status():
         res = "notfound"
         cursor.close()
         return render_template("staff_change_flights_status.html", res=res)
-    airline_name = flights[0][0]
+    airline_name = query[0][0]
     if airline_name != session["airline_name"]:
         res = "noaccess"
         cursor.close()
@@ -634,7 +634,7 @@ def staff_change_flights_status():
         res = "error"
     cursor.close()
 
-    return render_template("staff_change_flights_status.html", res=res, airline_name=airline_name)
+    return render_template("staff_change_flights_status.html", res=res)
 
 
 @ app.route("/staff_add_airplane")
@@ -1006,6 +1006,10 @@ def show_sessions():
 
 @app.route('/customer_page')
 def customer_page():
+    if "usertype" not in session:
+        return redirect("/")
+    if session["usertype"] != "customer":
+        return redirect("/")
     if "username" in session:
         username = session["username"]
         return render_template("/customer_page.html", username = "Welcome! "+username, flights_rec = None, flights_found = None)
@@ -1014,6 +1018,10 @@ def customer_page():
 
 @app.route('/booking_agent_page')
 def booking_agent_page():
+    if "usertype" not in session:
+        return redirect("/")
+    if session["usertype"] != "booking agent":
+        return redirect("/")
     if "username" in session:
         username = session["username"]
         return render_template("/booking_agent_page.html", username = "Welcome! "+username, flights_rec = None, flights_found = None)
@@ -1023,6 +1031,10 @@ def booking_agent_page():
 @app.route('/view_my_flights', methods = ["GET", "POST"])
 def view_my_flights():
     usertype = session["usertype"]
+    if "usertype" not in session:
+        return redirect("/")
+    if session["usertype"] == "staff":
+        return redirect("/")
     cursor = conn.cursor(prepared=True)
     choice = request.form["choice"]
     if choice == "default":
@@ -1129,11 +1141,19 @@ def view_my_flights():
 
 @app.route('/track_my_spending_c')
 def track_my_spending_c():
+    if "usertype" not in session:
+        return redirect("/")
+    if session["usertype"] != "customer":
+        return redirect("/")
     return render_template('track_my_spending_c.html')
 
 
 @app.route('/spending_c', methods = ["GET", "POST"])
 def spending_c():
+    if "usertype" not in session:
+        return redirect("/")
+    if session["usertype"] != "customer":
+        return redirect("/")
     choice = request.form["choice"]
     cursor = conn.cursor(prepared=True)
 
@@ -1174,13 +1194,23 @@ def spending_c():
 
 @app.route("/purchase")
 def purchase():
+    if "usertype" not in session:
+        return redirect("/")
     usertype = session["usertype"]
     username = session["username"]
-    return render_template('purchase.html', username = username, usertype = usertype)
+
+    start_date = datetime.datetime.today().strftime('%Y-%m-%d')
+    if session["usertype"] == "staff":
+        return redirect("/")
+    return render_template('purchase.html', username = username, usertype = usertype,today = start_date)
 
 @app.route('/search_flights', methods = ["GET", "POST"])
 def search_flights():
+    if "usertype" not in session:
+        return redirect("/")
     usertype = session["usertype"]
+    if session["usertype"] == "staff":
+        return redirect("/")
     scity = request.args.get('scity')
     dcity = request.args.get('dcity')
     sair = request.args.get("sair")
@@ -1193,6 +1223,7 @@ def search_flights():
     statuses = None
     cursor = conn.cursor(prepared=True)
 
+    start_date = datetime.datetime.today().strftime('%Y-%m-%d')
     # grab all cities in the database
     querycity = "SELECT airport_city from airport"
     cursor.execute(querycity)
@@ -1247,19 +1278,27 @@ def search_flights():
         air_name.append(i[0])
         flight_num.append(i[1])
     if usertype == "booking agent" or usertype == "customer":
-        return render_template("purchase.html", flights = flights, statuses = statuses, air_name = air_name, flight_num = flight_num,length = le)
+        return render_template("purchase.html", flights = flights, statuses = statuses, air_name = air_name, flight_num = flight_num,length = le, today = start_date)
 
 
 
 
 @app.route("/purchase_confirm")
 def purchase_confirm():
+    if "usertype" not in session:
+        return redirect("/")
     usertype = session["usertype"]
     username = session["username"]
+    if session["usertype"] == "staff":
+        return redirect("/")
     return render_template('purchase_confirm.html', username = username, usertype = usertype)
 
 @app.route('/purchasing', methods = ["GET", "POST"])
 def purchasing():
+    if "usertype" not in session:
+        return redirect("/")
+    if session["usertype"] == "staff":
+        return redirect("/")
     airline_name = request.form["airline_name"]
     flight_num = request.form["flight_num"]
     usertype = session["usertype"]
@@ -1290,12 +1329,21 @@ def purchasing():
 
 @app.route('/confirm', methods = ["GET", "POST"])
 def confirm():
+    if "usertype" not in session:
+        return redirect("/")
+    if "airline_name" not in session:
+        return redirect("/")
+    if "flight_num" not in session:
+        return redirect("/")
     username = session["username"]
     usertype = session["usertype"]
     airline_name = session["airline_name"]
     flight_num = session["flight_num"]
     ticket_id = random.randint(10000, 99999)
     message = "Successfully Purchased!"
+    
+    if session["usertype"] == "staff":
+        return redirect("/")
 
 
     cursor = conn.cursor(prepared=True)
@@ -1331,12 +1379,17 @@ def confirm():
     session.pop('airline_name')
     session.pop('flight_num')
 
-    return render_template("purchase_confirm.html", message = message, usertype = usertype)
+    return render_template("purchase.html", message = message, usertype = usertype)
 
 @app.route('/view_commission', methods = ["GET", "POST"])
 def view_commission():
+    if "usertype" not in session:
+        return redirect("/")
+    if session["usertype"] != "booking agent":
+        return redirect("/")
     username = session["username"]
     select = request.form["select"]
+
     cursor = conn.cursor(prepared=True)
 
     book_id = "SELECT booking_agent_id FROM booking_agent WHERE email =%s"
@@ -1384,7 +1437,12 @@ def view_commission():
 
 @app.route('/customers_b')
 def customers_b():
+    if "usertype" not in session:
+        return redirect("/")
+    if session["usertype"] != "booking agent":
+        return redirect("/")
     usertype = session["usertype"]
+
     cursor = conn.cursor(prepared=True)
 
     username = session["username"]
@@ -1425,6 +1483,8 @@ def customers_b():
 
 @app.route("/public_info")
 def public_info():
+    if "usertype" not in session:
+        return redirect("/")
     scity = request.args.get('scity')
     dcity = request.args.get('dcity')
     date_search = request.args.get('date_search')

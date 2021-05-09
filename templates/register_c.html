@@ -13,7 +13,9 @@
             <p>Please enter your username</p>
         	<input type="text" name = "username" placeholder="username" required/> </br>
             <p>Please set your password</p>
-        	<input type="password" name = "password" placeholder="password" required/></br>
+        	<input type="password" name = "password" placeholder="Password" id="password" required/>
+            <input type="checkbox" onclick="myFunction()">
+            <br>
             <p>Please enter your information below</p>
             <input type="number" name = "building_number" placeholder="building_number" required/> </br>
             <input type="text" name = "street" placeholder="street" required/> </br>
@@ -32,5 +34,15 @@
         	{% endif %}
         </form>
         <a href="/">Back to public page</a>
+        <script type="text/javascript">
+            function myFunction() {
+              var x = document.getElementById("password");
+              if (x.type === "password") {
+                x.type = "text";
+              } else {
+                x.type = "password";
+              }
+            }
+        </script>
     </body>
 </html>

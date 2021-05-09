@@ -12,7 +12,7 @@ import numpy as np
 import random
 import hashlib
 mpl.use('Agg')
-mpl.is_interactive()
+# mpl.is_interactive()
 app = Flask(__name__)
 dbconfig = json.load(open("dbconfig.json"))
 conn = mysql.connector.connect(host=dbconfig['host'], user=dbconfig['user'],
@@ -1341,7 +1341,7 @@ def confirm():
     flight_num = session["flight_num"]
     ticket_id = random.randint(10000, 99999)
     message = "Successfully Purchased!"
-    
+
     if session["usertype"] == "staff":
         return redirect("/")
 

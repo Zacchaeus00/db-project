@@ -11,12 +11,15 @@ import glob
 import numpy as np
 import random
 import hashlib
+import requests
 mpl.use('Agg')
 # mpl.is_interactive()
 app = Flask(__name__)
 dbconfig = json.load(open("dbconfig.json"))
 conn = mysql.connector.connect(host=dbconfig['host'], user=dbconfig['user'],
                                password=dbconfig['password'], database=dbconfig['database'])
+
+RECAPTCHA_SECRET = "6LcI1MwaAAAAAPC-dkPjZpT9b-vVko80g7EtXoRz"
 
 def decode_2d(res):
     if not res:
@@ -360,7 +363,15 @@ def registerAuthS():
     last_name = request.form["last_name"]
     date_of_birth = request.form["date_of_birth"]
     airline_name = request.form["airline_name"]
-
+    recap = request.form["g-recaptcha-response"]
+    data = {"secret": RECAPTCHA_SECRET,
+            "response": recap}
+    url = "https://www.google.com/recaptcha/api/siteverify"
+    response = requests.post(url, data)
+    response = requests.models.Response.json(response)
+    if not response["success"]:
+        error = "reCAPTCHA test failed"
+        return render_template('register.html', error=error)
 #   if not len(password) >= 4:
 #                flash("Password length must be at least 4 characters")
  #               return redirect(request.url)
@@ -614,7 +625,7 @@ def staff_change_flights_status():
         res = "notfound"
         cursor.close()
         return render_template("staff_change_flights_status.html", res=res)
-    airline_name = query[0][0]
+    airline_name = flights[0][0]
     if airline_name != session["airline_name"]:
         res = "noaccess"
         cursor.close()
